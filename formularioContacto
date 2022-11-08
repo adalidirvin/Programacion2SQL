@@ -1,0 +1,207 @@
+Imports System.Data
+Imports System.Data.SqlClient
+Public Partial Class MainForm
+Private m_dt As New DataTable	
+	Public Sub New()
+		' The Me.InitializeComponent call is required for Windows Forms designer support.
+		Me.InitializeComponent()
+		
+		'
+		' TODO : Add constructor code after InitializeComponents
+		'
+		mostrar()
+	End Sub
+	
+	Sub MainFormLoad(sender As Object, e As EventArgs)
+		mostrar()
+	End Sub
+	
+	Sub BtnConexionClick(sender As Object, e As EventArgs)
+		frmConexion.show()		
+	End Sub
+	
+	
+	Public Sub mostrar
+		Try
+			Dim valor As New dContacto
+			m_dt= valor.mostrar()
+			If m_dt.Rows.Count <> 0 Then
+            	dgvDatos.DataSource = m_dt
+            	tbxBuscar.Enabled=True
+            	dgvDatos.ColumnHeadersVisible=True
+            	lbInexistente.Visible=False
+            Else
+                dgvDatos.DataSource = Nothing
+            	tbxBuscar.Enabled=False
+            	dgvDatos.ColumnHeadersVisible=False
+            	lbInexistente.Visible=True
+            End If			
+		Catch falla As Exception
+			MsgBox(falla.Message)			
+		End Try
+	End Sub
+	
+	'Esta funcion permite limpiar las cajas de texto para poder agregar nuevo contenido
+	Public Sub limpiar
+		tbxID.Text=""
+		tbxNombre.Text=""
+		tbxApP.Text=""
+		tbxApM.Text=""
+		tbxCelular.Text=""
+		tbxEmail.Text=""
+	End Sub
+	
+	Sub DataGridView1CellContentClick(sender As Object, e As DataGridViewCellEventArgs)
+		tbxID.Text=dgvDatos.SelectedCells.Item(0).Value
+		tbxNombre.Text=dgvDatos.SelectedCells.Item(1).Value
+		tbxApP.Text=dgvDatos.SelectedCells(2).Value
+		tbxApM.Text=dgvDatos.SelectedCells.Item(3).Value
+		tbxCelular.Text=dgvDatos.SelectedCells.Item(4).Value
+		tbxEmail.Text=dgvDatos.SelectedCells.Item(5).Value
+	End Sub
+	
+	Sub BtnNuevoClick(sender As Object, e As EventArgs)
+		If Me.ValidateChildren = True And tbxNombre.Text <> "" And tbxApP.Text <> "" And tbxApM.Text <> "" And tbxCelular.Text <> "" And tbxEmail.Text <> "" Then
+            Try
+                Dim dts As New lContacto
+                Dim func As New dContacto
+
+                dts.gnombre = tbxNombre.Text
+                dts.gapellidoP= tbxApP.Text
+                dts.gapellidoM = tbxApM.Text
+                dts.gcelular = tbxCelular.Text
+                dts.gemail = tbxEmail.Text
+
+
+                If func.agregar(dts) Then
+                    MessageBox.Show("Contacto registrado correctamente", "Guardando registros", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    mostrar()
+                    limpiar()
+                Else
+                    MessageBox.Show("Contacto no fue registrado intente de nuevo", "Guardando registros", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    mostrar()
+                    limpiar()
+                End If
+
+            Catch ex As Exception
+                MsgBox(ex.Message)
+            End Try
+        Else
+            MessageBox.Show("Falta ingresar algunos datos", "Guardando registros", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        End If		
+	End Sub
+	
+	Sub Button1Click(sender As Object, e As EventArgs)
+		Dim result As DialogResult
+
+        result = MessageBox.Show("Realmente desea editar los datos del contacto?", "Modificando registros", MessageBoxButtons.OKCancel, MessageBoxIcon.Question)
+
+        If result = DialogResult.OK Then
+
+            If Me.ValidateChildren = True And tbxNombre.Text <> "" And tbxApP.Text <> "" And tbxApM.Text <> "" And tbxCelular.Text <> "" And tbxEmail.Text <> "" And tbxID.Text<>"" Then
+                Try
+                    Dim dts As New lContacto
+                    Dim func As New dContacto
+
+                    dts.gid_contacto = tbxID.Text
+                    dts.gnombre = tbxNombre.Text
+                    dts.gapellidoP= tbxApP.Text
+                    dts.gapellidoM = tbxApM.Text
+                    dts.gemail = tbxEmail.Text
+                    dts.gcelular = tbxCelular.Text
+
+
+                    If func.editar(dts) Then
+                        MessageBox.Show("Contacto modificado correctamente", "Modificando registros", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                        mostrar()
+                        limpiar()
+                    Else
+                        MessageBox.Show("El contacto no fue modificado intente de nuevo", "Modificando registros", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        mostrar()
+                        limpiar()
+                    End If
+
+                Catch ex As Exception
+                    MsgBox(ex.Message)
+                End Try
+            Else
+                MessageBox.Show("Falta ingresar algunos datos", "Modificando registros", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            End If
+        End If		
+	End Sub
+	
+	Sub BtnEliminarClick(sender As Object, e As EventArgs)
+		Dim result As DialogResult
+
+        result = MessageBox.Show("Realmente desea editar los datos del contacto?", "Modificando registros", MessageBoxButtons.OKCancel, MessageBoxIcon.Question)
+
+        If result = DialogResult.OK Then
+
+                Try
+                    Dim dts As New lContacto
+                    Dim func As New dContacto
+
+                    dts.gid_contacto = tbxID.Text
+
+                    If func.eliminar(dts) Then
+                        MessageBox.Show("Contacto eliminado correctamente", "Modificando registros", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                        mostrar()
+                        limpiar()
+                    Else
+                        MessageBox.Show("El contacto no pudo se eliminado, intente de nuevo", "Modificando registros", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        mostrar()
+                        limpiar()
+                    End If
+
+                Catch ex As Exception
+                    MsgBox(ex.Message)
+                End Try
+        End If		
+	End Sub
+	
+	
+	Sub BtnLimpClick(sender As Object, e As EventArgs)
+		limpiar()
+	End Sub
+	
+	Private Sub buscar()
+        Try
+            Dim ds As New DataSet
+            ds.Tables.Add(m_dt.Copy)
+            Dim dv As New DataView(ds.Tables(0))
+            Dim valor As String=""
+            If(cbxBuscar.Text="Nombre completo")Then
+            	valor="nombre"
+            ElseIf(cbxBuscar.Text="Apellido paterno") Then
+            	valor="apellidoP"
+			ElseIf(cbxBuscar.Text="Apellido materno") Then
+            	valor="apellidoM"            	
+            End If
+
+
+            dv.RowFilter = valor & " like '" & tbxBuscar.Text & "%'"
+
+            If dv.Count <> 0 Then
+                lbInexistente.Visible = False
+                dgvDatos.DataSource = dv
+
+            Else
+                lbInexistente.Visible = True
+                dgvDatos.DataSource = Nothing
+            End If
+
+        Catch ex As Exception
+            MsgBox(ex.Message)
+        End Try
+    End Sub
+	
+	Sub BtnBuscarClick(sender As Object, e As EventArgs)
+		buscar()
+	End Sub
+	
+	
+	
+	Sub TbxBuscarTextChanged(sender As Object, e As EventArgs)
+		buscar()
+	End Sub
+End Class
