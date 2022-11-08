@@ -1,0 +1,103 @@
+Imports System.Data
+Imports System.Data.SqlClient
+Public Class dContacto
+	Inherits conexion
+	Dim comando As SqlCommand
+	
+	Public Function mostrar() As DataTable
+		Try
+			conectar()
+			comando=New SqlCommand("mostrar_datos")
+			comando.CommandType=CommandType.StoredProcedure
+			comando.Connection=con
+			If comando.ExecuteNonQuery Then
+				Dim dt As New DataTable
+				Dim da As New SqlDataAdapter(comando)
+				da.fill(dt)
+				Return dt
+			Else
+				Return Nothing
+			End If
+		Catch falla As Exception
+			MsgBox(falla.Message)
+		Finally
+			desconectar()
+		End Try
+	End Function
+	
+	Public Function agregar(byval dts As lContacto) As Boolean
+		Try
+            conectar()
+            comando = New SqlCommand("insertar_contacto")
+            comando.CommandType = CommandType.StoredProcedure
+            comando.Connection = con
+
+
+            comando.Parameters.AddWithValue("@nombre", dts.gnombre)
+            comando.Parameters.AddWithValue("@apellidoP", dts.gapellidoP)
+            comando.Parameters.AddWithValue("@apellidoM", dts.gapellidoM)
+            comando.Parameters.AddWithValue("@email", dts.gemail)
+            comando.Parameters.AddWithValue("@celular", dts.gcelular)
+
+            If comando.ExecuteNonQuery Then
+                Return True
+            Else
+                Return False
+            End If
+
+        Catch ex As Exception
+            MsgBox(ex.Message)
+            Return False
+        Finally
+            desconectar()
+        End Try
+	End Function
+	
+	Public Function eliminar(byval dts As lContacto) As Boolean
+		Try
+            conectar()
+            comando = New SqlCommand("eliminar_contacto")
+            comando.CommandType = CommandType.StoredProcedure
+            comando.Connection = con
+
+            comando.Parameters.Add("@idContacto", SqlDbType.NVarChar, 50).Value = dts.gid_contacto
+            If comando.ExecuteNonQuery Then
+                Return True
+            Else
+                Return False
+            End If
+        Catch ex As Exception
+            MsgBox(ex.Message)
+            Return False
+
+        End Try
+	End Function
+	
+	Public Function editar(byval dts As lContacto) As Boolean
+		Try
+            conectar()
+            comando = New SqlCommand("editar_contacto")
+            comando.CommandType = CommandType.StoredProcedure
+            comando.Connection = con
+
+			comando.Parameters.AddWithValue("@idContacto", dts.gid_contacto)
+			comando.Parameters.AddWithValue("@nombre", dts.gnombre)
+            comando.Parameters.AddWithValue("@apellidoP", dts.gapellidoP)
+            comando.Parameters.AddWithValue("@apellidoM", dts.gapellidoM)
+            comando.Parameters.AddWithValue("@email", dts.gemail)
+            comando.Parameters.AddWithValue("@celular", dts.gcelular)
+
+            If comando.ExecuteNonQuery Then
+                Return True
+            Else
+                Return False
+            End If
+
+        Catch ex As Exception
+            MsgBox(ex.Message)
+            Return False
+        Finally
+            desconectar()
+        End Try
+	End Function
+End Class
