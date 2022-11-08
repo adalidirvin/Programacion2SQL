@@ -1,0 +1,73 @@
+'
+' Created by SharpDevelop.
+' User: User
+' Date: 19/10/2022
+' Time: 9:00
+' 
+' To change this template use Tools | Options | Coding | Edit Standard Headers.
+'
+Public Class lContacto
+	Dim id_contacto,celular As Integer
+	Dim nombre,apellidoP,apellidoM,email As String
+	
+	Public Property gid_contacto
+		Get
+			Return id_contacto
+		End Get
+		Set(ByVal value)
+			id_contacto=value
+		End Set
+	End Property
+	
+	Public Property gcelular
+		Get
+			Return celular
+		End Get
+		Set(ByVal value)
+			celular=value
+		End Set
+	End Property
+	Public Property gnombre
+		Get
+			Return nombre
+		End Get
+		Set(ByVal value)
+			nombre=value
+		End Set
+	End Property
+	Public Property gapellidoP
+		Get
+			Return apellidoP
+		End Get
+		Set(ByVal value)
+			apellidoP=value
+		End Set
+	End Property
+	Public Property gapellidoM
+		Get
+			Return apellidoM
+		End Get
+		Set(ByVal value)
+			apellidoM=value
+		End Set
+	End Property
+	Public Property gemail
+		Get
+			Return email
+		End Get
+		Set(ByVal value)
+			email=value
+		End Set
+	End Property
+	Public Sub New()
+		
+	End Sub
+	Public Sub New(ByVal id_contacto As Integer,ByVal nombre As String, ByVal apellidoP As String, ByVal apellidoM As String, ByVal email As String, ByVal celular As Integer)
+		gid_contacto=id_contacto
+		gnombre=nombre
+		gapellidoP=apellidoP
+		gapellidoM=apellidoM
+		gemail=email
+		gcelular=celular
+	End Sub
+End Class
